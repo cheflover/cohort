@@ -1,7 +1,9 @@
+DROP TEMPORARY TABLE IF EXISTS great_SQL;
+CREATE TEMPORARY TABLE great_SQL
 SELECT
   film.film_id,
   film.title,
-  film.rental_rate * COUNT(*) total_rental
+  film.rental_rate * COUNT(*) total_revenue
 
 FROM rental, film, inventory
 
@@ -9,4 +11,21 @@ WHERE rental.inventory_id = inventory.inventory_id
   AND inventory.film_id = film.film_id
 
 GROUP BY 1
+;
+
+
+
+SELECT
+ actor.actor_id,
+ CONCAT(actor.first_name, '', actor.last_name) name,
+ SUM(great_SQL.total_revenue) total_revenue_per_actor
+
+FROM film_actor, actor, great_SQL
+
+WHERE great_SQL.film_id = film_actor.film_id
+  AND film_actor.actor_id = actor.actor_id
+GROUP BY 1
+ORDER BY total_revenue_per_actor DESC
+LIMIT 10
+
 ;
